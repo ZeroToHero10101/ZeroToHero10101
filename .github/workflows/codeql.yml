@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload and Send Exam</title>
+</head>
+<body>
+    <h1>Upload and Send Exam</h1>
+    <label for="emailInput">Recipient Email:</label>
+    <input type="email" id="emailInput" required>
+    <br><br>
+    <label for="fileInput">Select Exam File (PDF or Word):</label>
+    <input type="file" id="fileInput" accept=".pdf,.docx" required>
+    <br><br>
+    <button onclick="collectDataAndSendEmail()">Upload and Send</button>
+
+    <script>
+        function collectDataAndSendEmail() {
+            const emailInput = document.getElementById('emailInput');
+            const recipientEmail = emailInput.value;
+
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a file to upload');
+                return;
+            }
+
+            if (!recipientEmail) {
+                alert('Please enter recipient email address');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('email', recipientEmail);
+            formData.append('file', file);
+
+            fetch('/upload_and_send', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to upload and send exam');
+                }
+                return response.text();
+            })
+            .then(result => {
+                console.log(result);
+                alert('Exam uploaded and sent successfully');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error uploading and sending exam');
+            });
+        }
+    </script>
+</body>
+</html>
